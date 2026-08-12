@@ -3,6 +3,7 @@ title: 'Welcome to My Blog'
 description: 'This is the first post on my new Astro blog.'
 pubDate: '2025-05-08'
 heroImage: '/blog-placeholder-1.jpg'
+categories: ['astro', 'meta']
 ---
 
 # Welcome to My Blog! 👋

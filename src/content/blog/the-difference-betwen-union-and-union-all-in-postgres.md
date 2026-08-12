@@ -3,9 +3,10 @@ title: 'The Difference Between UNION and UNION ALL in Postgres'
 description: 'Brief explantion about the difference between UNION and UNION ALL in Postgres'
 pubDate: '2026-08-12'
 heroImage: '/blog-placeholder-2.jpg'
+categories: ['postgres', 'database']
 ---
 
-# The Difference Between UNION and UNION ALL in Typescript
+# The Difference Between UNION and UNION ALL in Postgres
 
 Use **UNION** if you want to return unique values. For Example:
 

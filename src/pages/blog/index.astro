@@ -5,16 +5,47 @@ import { getCollection } from 'astro:content';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const categoryCounts = new Map<string, number>();
+for (const post of posts) {
+	for (const cat of post.data.categories ?? []) {
+		categoryCounts.set(cat, (categoryCounts.get(cat) ?? 0) + 1);
+	}
+}
+const categories = Array.from(categoryCounts.entries())
+	.sort(([a], [b]) => a.localeCompare(b))
+	.map(([name, count]) => ({ name, count }));
 ---
 
 <BlogLayout title="Blog - My Blog" description="All blog posts">
 	<section class="py-8">
 		<h1 class="text-4xl font-bold text-gray-900 mb-4 dark:text-gray-100">Blog</h1>
+
 		<p class="text-xl text-gray-600 mb-12 dark:text-gray-300">All my blog posts in one place.</p>
+
+		<div id="category-bar" class="flex flex-wrap gap-2 mb-6" role="tablist" aria-label="Filter by category">
+			<button
+				type="button"
+				data-category=""
+				class="category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-600 text-white dark:bg-indigo-500"
+			>All</button>
+			{categories.map(({ name, count }) => (
+				<button
+					type="button"
+					data-category={name}
+					class="category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60"
+				>
+					{name} <span class="opacity-70">({count})</span>
+				</button>
+			))}
+		</div>
 
 		<div class="space-y-6">
 			{posts.map((post) => (
-				<article class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700">
+				<article
+					data-categories={(post.data.categories ?? []).join(',').toLowerCase()}
+					class="post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700"
+				>
 					<a href={`/blog/${post.id}`} class="block p-6">
 						<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 							<div class="flex-1">
@@ -41,5 +72,53 @@ const posts = (await getCollection('blog')).sort(
 		{posts.length === 0 && (
 			<p class="text-center text-gray-600 py-16 dark:text-gray-300">No posts yet. Check back soon!</p>
 		)}
+
+		<p id="no-results" class="text-center text-gray-600 py-16 dark:text-gray-300" style="display: none;">
+			No posts in this category.
+		</p>
 	</section>
+
+	<script is:inline>
+		(function () {
+			const bar = document.getElementById('category-bar');
+			if (!bar) return;
+			const cards = document.querySelectorAll('.post-card');
+			const empty = document.getElementById('no-results');
+			const pills = bar.querySelectorAll('.category-pill');
+
+			const ACTIVE = 'category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-600 text-white dark:bg-indigo-500';
+			const INACTIVE = 'category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60';
+
+			function applyFilter(cat) {
+				cat = (cat || '').toLowerCase();
+				pills.forEach((p) => {
+					const match = (p.getAttribute('data-category') || '').toLowerCase() === cat;
+					p.className = match ? ACTIVE : INACTIVE;
+				});
+
+				let visible = 0;
+				cards.forEach((card) => {
+					const cats = (card.getAttribute('data-categories') || '').split(',').filter(Boolean);
+					const show = !cat || cats.includes(cat);
+					card.style.display = show ? '' : 'none';
+					if (show) visible++;
+				});
+				if (empty) empty.style.display = visible === 0 ? '' : 'none';
+
+				const url = new URL(window.location.href);
+				if (cat) url.searchParams.set('category', cat);
+				else url.searchParams.delete('category');
+				history.replaceState(null, '', url.toString());
+			}
+
+			const initial = new URL(window.location.href).searchParams.get('category') || '';
+			applyFilter(initial);
+
+			bar.addEventListener('click', (e) => {
+				const btn = e.target.closest('.category-pill');
+				if (!btn) return;
+				applyFilter(btn.getAttribute('data-category') || '');
+			});
+		})();
+	</script>
 </BlogLayout>

@@ -3,6 +3,7 @@ title: 'Getting Started with TypeScript'
 description: 'A beginner guide to TypeScript and why you should use it.'
 pubDate: '2025-05-09'
 heroImage: '/blog-placeholder-2.jpg'
+categories: ['typescript', 'javascript']
 ---
 
 # Getting Started with TypeScript
