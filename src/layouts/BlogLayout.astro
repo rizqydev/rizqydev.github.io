@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	title: string;
+	description: string;
+	pubDate?: Date;
+	updatedDate?: Date;
+	heroImage?: string;
+}
+
+const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<script is:inline>
+			(function () {
+				const stored = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				if (stored === 'dark' || (!stored && prefersDark)) {
+					document.documentElement.classList.add('dark');
+				}
+			})();
+		</script>
+	</head>
+	<body class="bg-gray-50 text-gray-900 min-h-screen dark:bg-gray-900 dark:text-gray-100">
+		<header class="bg-white shadow-sm dark:bg-gray-800">
+			<nav class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+				<a href="/" class="text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+					My Blog
+				</a>
+				<div class="space-x-4 flex items-center">
+					<a href="/" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Home</a>
+					<a href="/blog" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Blog</a>
+					<button
+						id="theme-toggle"
+						type="button"
+						aria-label="Toggle dark mode"
+						class="ml-4 p-2 rounded-lg border border-gray-300 text-gray-600 hover:text-indigo-600 transition dark:border-gray-600 dark:text-gray-300 dark:hover:text-indigo-400"
+					>
+						<span class="hidden dark:inline" aria-hidden="true">☀️</span>
+						<span class="dark:hidden" aria-hidden="true">🌙</span>
+					</button>
+				</div>
+			</nav>
+		</header>
+
+		<main class="max-w-4xl mx-auto px-4 py-8">
+			<slot />
+		</main>
+
+		<footer class="bg-white border-t mt-16 dark:bg-gray-800 dark:border-gray-700">
+			<div class="max-w-4xl mx-auto px-4 py-6 text-center text-gray-600 dark:text-gray-300">
+				&copy; {new Date().getFullYear()} My Blog. Built with Astro & TailwindCSS.
+			</div>
+		</footer>
+
+		<script is:inline>
+			(function () {
+				const toggle = document.getElementById('theme-toggle');
+				if (!toggle) return;
+				toggle.addEventListener('click', () => {
+					const isDark = document.documentElement.classList.toggle('dark');
+					localStorage.setItem('theme', isDark ? 'dark' : 'light');
+				});
+			})();
+		</script>
+	</body>
+</html>
