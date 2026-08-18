@@ -6,80 +6,78 @@ const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const latestPost = posts[0];
-const otherPosts = posts.slice(1);
+const englishPosts = posts
+	.filter((p) => (p.data.language ?? 'en') === 'en')
+	.slice(0, 5);
+
+const indonesianPosts = posts
+	.filter((p) => p.data.language === 'id')
+	.slice(0, 5);
 ---
 
-<BlogLayout title="My Blog - Home" description="Welcome to my blog about web development">
+<BlogLayout title="Hello, I'm Rizqy" description="Welcome to Rizqy's blog — thoughts on web development, coding, and technology.">
 	<!-- Hero Section -->
-	<section class="text-center py-16">
+	<section class="text-center pt-8 pb-16">
 		<h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 dark:text-gray-100">
-			Welcome to My Blog
+			Hello, I'm Rizqy
 		</h1>
-		<p class="text-xl text-gray-600 max-w-2xl mx-auto dark:text-gray-300">
-			Sharing my thoughts on web development, coding, and technology.
+		<p class="text-lg text-gray-600 max-w-2xl mx-auto dark:text-gray-300">
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 		</p>
 	</section>
 
-	<!-- Latest Post -->
-	{latestPost && (
-		<section class="mb-12">
-			<h2 class="text-2xl font-semibold text-gray-900 mb-6 dark:text-gray-100">Latest Post</h2>
-			<article class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700">
-				<a href={`/blog/${latestPost.id}`} class="block">
-					<div class="aspect-video bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-						<span class="text-white text-6xl opacity-50">📝</span>
-					</div>
-					<div class="p-6">
-						<div class="flex items-center gap-2 text-sm text-gray-500 mb-2 dark:text-gray-400">
-							<time datetime={latestPost.data.pubDate.toISOString()}>
-								{latestPost.data.pubDate.toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</time>
-						</div>
-						<h3 class="text-2xl font-bold text-gray-900 mb-2 hover:text-indigo-600 transition dark:text-gray-100">
-							{latestPost.data.title}
-						</h3>
-						<p class="text-gray-600 dark:text-gray-300">{latestPost.data.description}</p>
-					</div>
-				</a>
-			</article>
-		</section>
-	)}
-
-	<!-- Other Posts -->
-	{otherPosts.length > 0 && (
-		<section>
-			<h2 class="text-2xl font-semibold text-gray-900 mb-6 dark:text-gray-100">Recent Posts</h2>
-			<div class="grid md:grid-cols-2 gap-6">
-				{otherPosts.map((post) => (
-					<article class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700">
-						<a href={`/blog/${post.id}`} class="block p-6">
-							<div class="flex items-center gap-2 text-sm text-gray-500 mb-2 dark:text-gray-400">
-								<time datetime={post.data.pubDate.toISOString()}>
-									{post.data.pubDate.toLocaleDateString('en-US', {
-										year: 'numeric',
-										month: 'long',
-										day: 'numeric',
-									})}
-								</time>
-							</div>
-							<h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-indigo-600 transition dark:text-gray-100">
-								{post.data.title}
-							</h3>
-							<p class="text-gray-600 dark:text-gray-300">{post.data.description}</p>
-						</a>
-					</article>
-				))}
+	<!-- Latest Posts: English & Indonesian side-by-side -->
+	<section class="mb-12">
+		<div class="grid md:grid-cols-2 gap-6">
+			<!-- English column -->
+			<div>
+				<h2 class="text-2xl font-semibold text-gray-900 mb-6 dark:text-gray-100">Latest Articles (English)</h2>
+				{englishPosts.length === 0 ? (
+					<p class="text-gray-600 dark:text-gray-300">No English posts yet.</p>
+				) : (
+					<ul class="space-y-4">
+						{englishPosts.map((post) => (
+							<li class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700">
+								<a href={`/blog/${post.id}`} class="block">
+									<div class="flex items-center gap-2 text-sm text-gray-500 mb-1 dark:text-gray-400">
+										<time datetime={post.data.pubDate.toISOString()}>
+											{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+										</time>
+									</div>
+									<h3 class="text-lg font-bold text-gray-900 hover:text-indigo-600 transition dark:text-gray-100">
+										{post.data.title}
+									</h3>
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
 			</div>
-		</section>
-	)}
 
-	<!-- No Posts -->
-	{posts.length === 0 && (
-		<p class="text-center text-gray-600 py-16 dark:text-gray-300">No posts yet. Check back soon!</p>
-	)}
+			<!-- Indonesian column -->
+			<div>
+				<h2 class="text-2xl font-semibold text-gray-900 mb-6 dark:text-gray-100">Artikel Terbaru (Bahasa Indonesia)</h2>
+				{indonesianPosts.length === 0 ? (
+					<p class="text-gray-600 dark:text-gray-300">Belum ada artikel Bahasa Indonesia.</p>
+				) : (
+					<ul class="space-y-4">
+						{indonesianPosts.map((post) => (
+							<li class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700">
+								<a href={`/blog/${post.id}`} class="block">
+									<div class="flex items-center gap-2 text-sm text-gray-500 mb-1 dark:text-gray-400">
+										<time datetime={post.data.pubDate.toISOString()}>
+											{post.data.pubDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+										</time>
+									</div>
+									<h3 class="text-lg font-bold text-gray-900 hover:text-indigo-600 transition dark:text-gray-100">
+										{post.data.title}
+									</h3>
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</div>
+	</section>
 </BlogLayout>

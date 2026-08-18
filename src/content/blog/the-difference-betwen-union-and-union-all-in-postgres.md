@@ -4,6 +4,7 @@ description: 'Brief explantion about the difference between UNION and UNION ALL 
 pubDate: '2026-08-12'
 heroImage: '/blog-placeholder-2.jpg'
 categories: ['postgres', 'database']
+language: en
 ---
 
 # The Difference Between UNION and UNION ALL in Postgres

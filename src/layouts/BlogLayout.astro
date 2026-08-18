@@ -36,11 +36,11 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<header class="bg-white shadow-sm dark:bg-gray-800">
 			<nav class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
 				<a href="/" class="text-xl font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
-					My Blog
+					Rizqy's Blog
 				</a>
 				<div class="space-x-4 flex items-center">
-					<a href="/" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Home</a>
-					<a href="/blog" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Blog</a>
+					<a href="/" data-nav="home" class="nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Home</a>
+					<a href="/blog" data-nav="blog" class="nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Blog</a>
 					<button
 						id="theme-toggle"
 						type="button"
@@ -58,7 +58,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			<slot />
 		</main>
 
-		<footer class="bg-white border-t mt-16 dark:bg-gray-800 dark:border-gray-700">
+		<footer class="bg-white mt-16 dark:bg-gray-800 shadow-sm">
 			<div class="max-w-4xl mx-auto px-4 py-6 text-center text-gray-600 dark:text-gray-300">
 				&copy; {new Date().getFullYear()} My Blog. Built with Astro & TailwindCSS.
 			</div>
@@ -66,6 +66,19 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 
 		<script is:inline>
 			(function () {
+				// Active nav-link highlighting
+				const path = window.location.pathname.replace(/\/+$/, '') || '/';
+				const links = document.querySelectorAll('a.nav-link[data-nav]');
+				const ACTIVE = 'nav-link font-semibold text-indigo-600 dark:text-indigo-400';
+				const INACTIVE = 'nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400';
+				links.forEach((el) => {
+					const key = el.getAttribute('data-nav');
+					const isHome = key === 'home' && (path === '/' || path === '');
+					const isBlog = key === 'blog' && (path === '/blog' || path.startsWith('/blog/'));
+					el.className = isHome || isBlog ? ACTIVE : INACTIVE;
+				});
+
+				// Theme toggle
 				const toggle = document.getElementById('theme-toggle');
 				if (!toggle) return;
 				toggle.addEventListener('click', () => {
