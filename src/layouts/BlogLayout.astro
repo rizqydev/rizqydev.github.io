@@ -41,6 +41,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<div class="space-x-4 flex items-center">
 					<a href="/" data-nav="home" class="nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Home</a>
 					<a href="/blog" data-nav="blog" class="nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Blog</a>
+					<a href="/about" data-nav="about" class="nav-link text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">About</a>
 					<button
 						id="theme-toggle"
 						type="button"
@@ -75,7 +76,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					const key = el.getAttribute('data-nav');
 					const isHome = key === 'home' && (path === '/' || path === '');
 					const isBlog = key === 'blog' && (path === '/blog' || path.startsWith('/blog/'));
-					el.className = isHome || isBlog ? ACTIVE : INACTIVE;
+					const isAbout = key === 'about' && (path === '/about' || path.startsWith('/about/'));
+					el.className = isHome || isBlog || isAbout ? ACTIVE : INACTIVE;
 				});
 
 				// Theme toggle
