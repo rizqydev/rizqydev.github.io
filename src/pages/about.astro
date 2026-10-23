@@ -1,13 +1,15 @@
 ---
-import BlogLayout from '../layouts/BlogLayout.astro';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<BlogLayout title="About — Rizqy Nurhaqy" description="Learn more about Rizqy Nurhaqy — a fullstack web developer with 5+ years of experience in PHP, JavaScript, and Go.">
-	<section class="w-full pt-8 pb-16 mx-auto">
-		<h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-8 dark:text-gray-100">
-			About Me
+<Layout title="About — rizqy.dev" description="About Rizqy — Software developer focused on building functional, well-crafted tools.">
+	<section class="max-w-[720px] mx-auto">
+		<h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
+			About
 		</h1>
-		<div class="space-y-6 text-lg text-gray-600 leading-8 text-justify dark:text-gray-300">
+		<div class="h-px bg-zinc-100 dark:bg-zinc-800 mb-8"></div>
+
+		<div class="space-y-6 text-zinc-700 dark:text-zinc-300 text-[17px] leading-[1.75] text-justify">
 			<p>
 				Hi 👋, my name is <strong class="text-gray-900 dark:text-gray-100">Rizqy Nurhaqy</strong>. I'm Computer Systems graduate who has been working in web development for over 5 years. Most of the time, I work as a fullstack web programmer, but I also enjoy focusing on either backend or frontend when needed. I started with PHP frameworks like Codigniter and Laravel, and later explored other technologies like Express.js, Hapi.js, and Gin (Golang). On the frontend side, I've used Vue, React, Nuxt.js and Next.js in different projects. I'm passionate about coding, especially anything related to building pratical solutions and learning new tools.
 			</p>
@@ -21,5 +23,40 @@ import BlogLayout from '../layouts/BlogLayout.astro';
 				I also enjoy sport, especially fustal, which I usually play once a week with friends. I like jogging as well--just a simple way to sweat and stay healthy. This blog is a small place where I share what I've learned, my experiences, and my thoughts. I hope you find it useful and inspiring. If you have any questions or want to connect, feel free to reach out!
 			</p>
 		</div>
+
+		<div class="mt-12">
+			<h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">Current Stack</h2>
+			<ul class="space-y-3 text-zinc-600 dark:text-zinc-400">
+				<li class="flex items-center gap-3">
+					<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+					TypeScript & Node.js
+				</li>
+				<li class="flex items-center gap-3">
+					<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+					Astro & Tailwind CSS v4
+				</li>
+				<li class="flex items-center gap-3">
+					<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+					PostgreSQL
+				</li>
+				<li class="flex items-center gap-3">
+					<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+					Neovim
+				</li>
+				<li class="flex items-center gap-3">
+					<span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+					Linux (Debian / Ubuntu)
+				</li>
+			</ul>
+		</div>
+
+		<div class="mt-12">
+			<h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-4">Find Me</h2>
+			<div class="flex gap-6 text-zinc-600 dark:text-zinc-400 font-medium">
+				<a href="https://github.com" target="_blank" rel="noreferrer" class="hover:text-zinc-900 dark:hover:text-zinc-100 transition">GitHub</a>
+				<a href="https://twitter.com" target="_blank" rel="noreferrer" class="hover:text-zinc-900 dark:hover:text-zinc-100 transition">Twitter</a>
+				<a href="mailto:rizqy@example.com" class="hover:text-zinc-900 dark:hover:text-zinc-100 transition">Email</a>
+			</div>
+		</div>
 	</section>
-</BlogLayout>
+</Layout>

@@ -1,124 +1,161 @@
 ---
-import BlogLayout from '../../layouts/BlogLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-const categoryCounts = new Map<string, number>();
-for (const post of posts) {
-	for (const cat of post.data.categories ?? []) {
-		categoryCounts.set(cat, (categoryCounts.get(cat) ?? 0) + 1);
-	}
-}
-const categories = Array.from(categoryCounts.entries())
-	.sort(([a], [b]) => a.localeCompare(b))
-	.map(([name, count]) => ({ name, count }));
+const allCategories = Array.from(
+	new Set(posts.flatMap((post) => post.data.categories || ['general']))
+).sort();
+
+const categoryCounts: Record<string, number> = {};
+posts.forEach((post) => {
+	const cats = post.data.categories || ['general'];
+	cats.forEach((c) => {
+		categoryCounts[c] = (categoryCounts[c] || 0) + 1;
+	});
+});
 ---
 
-<BlogLayout title="Blog - My Blog" description="All blog posts">
-	<section class="py-8">
-		<h1 class="text-4xl font-bold text-gray-900 mb-4 dark:text-gray-100">Blog</h1>
-
-		<p class="text-xl text-gray-600 mb-12 dark:text-gray-300">All my blog posts in one place.</p>
-
-		<div id="category-bar" class="flex flex-wrap gap-2 mb-6" role="tablist" aria-label="Filter by category">
-			<button
-				type="button"
-				data-category=""
-				class="category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-600 text-white dark:bg-indigo-500"
-			>All</button>
-			{categories.map(({ name, count }) => (
-				<button
-					type="button"
-					data-category={name}
-					class="category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60"
-				>
-					{name} <span class="opacity-70">({count})</span>
-				</button>
-			))}
-		</div>
-
-		<div class="space-y-6">
-			{posts.map((post) => (
-				<article
-					data-categories={(post.data.categories ?? []).join(',').toLowerCase()}
-					class="post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition dark:bg-gray-800 dark:border-gray-700"
-				>
-					<a href={`/blog/${post.id}`} class="block p-6">
-						<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-							<div class="flex-1">
-								<div class="flex items-center gap-2 text-sm text-gray-500 mb-2 dark:text-gray-400">
-									<time datetime={post.data.pubDate.toISOString()}>
-										{post.data.pubDate.toLocaleDateString('en-US', {
-											year: 'numeric',
-											month: 'long',
-											day: 'numeric',
-										})}
-									</time>
-								</div>
-								<h2 class="text-xl font-bold text-gray-900 mb-2 hover:text-indigo-600 transition dark:text-gray-100">
-									{post.data.title}
-								</h2>
-								<p class="text-gray-600 dark:text-gray-300">{post.data.description}</p>
-							</div>
-						</div>
-					</a>
-				</article>
-			))}
-		</div>
-
-		{posts.length === 0 && (
-			<p class="text-center text-gray-600 py-16 dark:text-gray-300">No posts yet. Check back soon!</p>
-		)}
-
-		<p id="no-results" class="text-center text-gray-600 py-16 dark:text-gray-300" style="display: none;">
-			No posts in this category.
+<Layout title="Blog" description="All my blog posts in one place.">
+	<section class="mb-10">
+		<h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">
+			Blog
+		</h1>
+		<p class="text-base text-zinc-600 dark:text-zinc-400 mb-6">
+			All my blog posts in one place.
 		</p>
+
+		<div class="flex flex-wrap gap-2">
+			<button class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 transition cursor-pointer" data-cat="all">
+				All ({posts.length})
+			</button>
+			{
+				allCategories.map((cat) => (
+					<button class="cat-pill px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 transition cursor-pointer" data-cat={cat}>
+						{cat} ({categoryCounts[cat]})
+					</button>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="border-t border-zinc-100 dark:border-zinc-800">
+		<div id="posts-container">
+			{
+				posts.map((post) => {
+					const cats = post.data.categories || ['general'];
+					return (
+						<a
+							href={`/blog/${post.id}`}
+							data-categories={JSON.stringify(cats)}
+							class="post-row group flex items-center justify-between py-4 border-b border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+						>
+							<span class="text-base font-medium text-zinc-900 group-hover:text-zinc-600 dark:text-zinc-200 dark:group-hover:text-zinc-400 transition-colors">
+								{post.data.title}
+							</span>
+							<span class="text-sm text-zinc-400 dark:text-zinc-500 shrink-0 ml-4">
+								{post.data.pubDate.toLocaleDateString('en-US', {
+									month: 'short',
+									day: 'numeric',
+									year: 'numeric',
+								})}
+							</span>
+						</a>
+					);
+				})
+			}
+		</div>
+
+		<div class="mt-8 flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400">
+			<button id="prev-btn" type="button" class="hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer">← Previous</button>
+			<span id="page-info">Page 1 of 2</span>
+			<button id="next-btn" type="button" class="hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer">Next →</button>
+		</div>
 	</section>
 
 	<script is:inline>
-		(function () {
-			const bar = document.getElementById('category-bar');
-			if (!bar) return;
-			const cards = document.querySelectorAll('.post-card');
-			const empty = document.getElementById('no-results');
-			const pills = bar.querySelectorAll('.category-pill');
+		document.addEventListener('DOMContentLoaded', () => {
+			const pills = document.querySelectorAll('.cat-pill');
+			const rows = Array.from(document.querySelectorAll('.post-row'));
+			const prevBtn = document.getElementById('prev-btn');
+			const nextBtn = document.getElementById('next-btn');
+			const pageInfo = document.getElementById('page-info');
 
-			const ACTIVE = 'category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-600 text-white dark:bg-indigo-500';
-			const INACTIVE = 'category-pill inline-block px-3 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60';
+			let currentPage = 1;
+			let currentCat = 'all';
+			const perPage = 5;
 
-			function applyFilter(cat) {
-				cat = (cat || '').toLowerCase();
-				pills.forEach((p) => {
-					const match = (p.getAttribute('data-category') || '').toLowerCase() === cat;
-					p.className = match ? ACTIVE : INACTIVE;
+			function updateDisplay() {
+				const matchingRows = rows.filter((row) => {
+					const cats = JSON.parse(row.getAttribute('data-categories') || '[]');
+					return currentCat === 'all' || cats.includes(currentCat);
 				});
 
-				let visible = 0;
-				cards.forEach((card) => {
-					const cats = (card.getAttribute('data-categories') || '').split(',').filter(Boolean);
-					const show = !cat || cats.includes(cat);
-					card.style.display = show ? '' : 'none';
-					if (show) visible++;
-				});
-				if (empty) empty.style.display = visible === 0 ? '' : 'none';
+				const totalPages = Math.max(1, Math.ceil(matchingRows.length / perPage));
+				if (currentPage > totalPages) currentPage = totalPages;
+				if (currentPage < 1) currentPage = 1;
 
-				const url = new URL(window.location.href);
-				if (cat) url.searchParams.set('category', cat);
-				else url.searchParams.delete('category');
-				history.replaceState(null, '', url.toString());
+				const startIndex = (currentPage - 1) * perPage;
+				const endIndex = startIndex + perPage;
+				const visibleSet = new Set(matchingRows.slice(startIndex, endIndex));
+
+				rows.forEach((row) => {
+					if (visibleSet.has(row)) {
+						row.style.display = 'flex';
+					} else {
+						row.style.display = 'none';
+					}
+				});
+
+				pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+				if (currentPage <= 1) {
+					prevBtn.style.opacity = '0.3';
+					prevBtn.style.pointerEvents = 'none';
+				} else {
+					prevBtn.style.opacity = '1';
+					prevBtn.style.pointerEvents = 'auto';
+				}
+
+				if (currentPage >= totalPages) {
+					nextBtn.style.opacity = '0.3';
+					nextBtn.style.pointerEvents = 'none';
+				} else {
+					nextBtn.style.opacity = '1';
+					nextBtn.style.pointerEvents = 'auto';
+				}
 			}
 
-			const initial = new URL(window.location.href).searchParams.get('category') || '';
-			applyFilter(initial);
+			pills.forEach((pill) => {
+				pill.addEventListener('click', () => {
+					currentCat = pill.getAttribute('data-cat');
+					currentPage = 1;
 
-			bar.addEventListener('click', (e) => {
-				const btn = e.target.closest('.category-pill');
-				if (!btn) return;
-				applyFilter(btn.getAttribute('data-category') || '');
+					pills.forEach((p) => {
+						p.className = "cat-pill px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 transition cursor-pointer";
+					});
+					pill.className = "cat-pill px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900 transition cursor-pointer";
+
+					updateDisplay();
+				});
 			});
-		})();
+
+			prevBtn.addEventListener('click', () => {
+				if (currentPage > 1) {
+					currentPage--;
+					updateDisplay();
+				}
+			});
+
+			nextBtn.addEventListener('click', () => {
+				currentPage++;
+				updateDisplay();
+			});
+
+			updateDisplay();
+		});
 	</script>
-</BlogLayout>
+</Layout>
