@@ -2,7 +2,7 @@
 title: 'How to Build and Package a VS Code Extension in TypeScript'
 description: 'A step-by-step guide to building a practical VS Code extension that wraps selected code in a try-catch block, debugging it, and packaging it into a .vsix file.'
 pubDate: 2026-11-11
-categories: ['VSCode', 'TypeScript', 'Tutorial']
+categories: ['VSCode', 'typescript']
 language: 'en'
 ---
 
