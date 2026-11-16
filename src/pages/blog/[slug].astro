@@ -41,6 +41,9 @@ const { Content } = await render(post);
 	</article>
 
 	<style is:global>
+		.pre-wrapper {
+			position: relative;
+		}
 		.copy-code-btn {
 			position: absolute;
 			top: 0.5rem;
@@ -66,8 +69,8 @@ const { Content } = await render(post);
 		.dark .copy-code-btn[data-state="copied"] { background: #064e3b; color: #6ee7b7; }
 		.dark .copy-code-btn[data-state="failed"] { background: #7f1d1d; color: #fecaca; }
 		@media (hover: hover) and (pointer: fine) {
-			pre:hover .copy-code-btn,
-			pre:focus-within .copy-code-btn { opacity: 1; }
+			.pre-wrapper:hover .copy-code-btn,
+			.pre-wrapper:focus-within .copy-code-btn { opacity: 1; }
 		}
 		@media not (hover: hover) {
 			.copy-code-btn { opacity: 1; }
@@ -86,15 +89,18 @@ const { Content } = await render(post);
 			}
 
 			function attach(pre) {
-				if (pre.querySelector(':scope > .copy-code-btn')) return;
-				if (!pre.style.position) pre.style.position = 'relative';
+				if (pre.parentElement && pre.parentElement.classList.contains('pre-wrapper')) return;
+				const wrapper = document.createElement('div');
+				wrapper.className = 'pre-wrapper';
+				pre.parentNode.insertBefore(wrapper, pre);
+				wrapper.appendChild(pre);
 				const btn = makeBtn();
 				const label = btn.querySelector('.copy-code-label');
 				let resetTimer;
 
 				async function copyText() {
-					const text = pre.innerText?.slice(0, pre.innerText.length - 4);
-					console.log("text", text)
+					const text = pre.innerText;
+					console.log("text", text);
 					try {
 						if (navigator.clipboard && window.isSecureContext) {
 							await navigator.clipboard.writeText(text);
@@ -122,7 +128,7 @@ const { Content } = await render(post);
 				}
 
 				btn.addEventListener('click', copyText);
-				pre.appendChild(btn);
+				wrapper.appendChild(btn);
 			}
 
 			function init() {
